@@ -1,9 +1,63 @@
 import time
+from pathlib import Path
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+
+BASE_DIR = Path(__file__).resolve().parent
+
+
+# def pytest_addoption(parser):
+#     parser.addoption("--br", action="store", default="chrome", help="the name of the browser")
+#
+#     parser.addoption(
+#         "--allure-print",
+#         action="store_true",
+#         default=True,
+#         help="Включить вывод шагов Allure в консоль.",
+#     )
+#     parser.addoption(
+#         "--locale",
+#         action="store",
+#         default="en",
+#         help="Locale to run tests in (e.g. en, ru).",
+#     )
+#
+#
+# @pytest.fixture(scope="session")
+# def locale(pytestconfig):
+#     return pytestconfig.getoption("--locale")
+#
+#
+# @pytest.fixture(autouse=False)
+# def driver(request, pytestconfig):
+#     browser = pytestconfig.getoption("--br")
+#     if browser == "firefox":
+#         opts = FirefoxOptions()
+#         opts.add_argument("--width=1980")
+#         opts.add_argument("--height=1600")
+#         web_driver = webdriver.Firefox(options=opts)
+#
+#     else:
+#         opts = Options()
+#         # opts.add_argument("--headless=new")
+#         opts.add_argument("--incognito")
+#
+#         prefs = {
+#             "credentials_enable_service": False,
+#             "profile.password_manager_enabled": False,
+#             "profile.password_manager_leak_detection": False,
+#         }
+#         opts.add_experimental_option("prefs", prefs)
+#
+#         web_driver = webdriver.Chrome(options=opts)
+#         web_driver.maximize_window()
+#         web_driver.implicitly_wait(3)
+#
+#     yield web_driver
+#     web_driver.quit()
 
 
 @pytest.fixture(autouse=False, params=["chrome"])
@@ -29,12 +83,17 @@ def driver(request):
             "credentials_enable_service": False,
             "profile.password_manager_enabled": False,
             "profile.password_manager_leak_detection": False,
+
+            "download.default_directory": str(BASE_DIR / "files"),
+            "download.prompt_for_download": False,
+            "download.directory_upgrade": True,
+            "plugins.always_open_pdf_externally": False,
         }
         opts.add_experimental_option("prefs", prefs)
 
         web_driver = webdriver.Chrome(options=opts)
         # web_driver.maximize_window()
-        web_driver.implicitly_wait(5)
+        web_driver.implicitly_wait(10)
 
     yield web_driver
     web_driver.quit()
@@ -58,6 +117,8 @@ def login(driver):
     time.sleep(2)
 
     if driver.name == "chrome":
-        driver.execute_cdp_cmd("Page.setDownloadBehavior", {"behavior": "deny"})
+        driver.execute_cdp_cmd("Page.setDownloadBehavior",
+            {"behavior": "allow",
+                "downloadPath": str(BASE_DIR / "files")})
 
     assert driver.current_url.endswith("/dashboard")
