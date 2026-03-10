@@ -1,10 +1,10 @@
 # Project_QAPython
- Improving my skills in Python
+Test Automation Framework using PyTest (In Progress).
 ### Commands
 ```` bash
 
     git clone https://github.com/Katerina-Adzincowa/Project_QAPython.git
-    pip install -r requirement.txt
+    pip install -r requirements.txt
 
 #   linters
     insort .
