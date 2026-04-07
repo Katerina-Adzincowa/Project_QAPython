@@ -12,3 +12,4 @@ class User:
 
 BOB = User(name='bob_user', email='bob@example.com', password='password123')
 NEWBOB = User(name='NewBob', email='newbob@gmail.com', password='password123', password_confirmation='password123')
+ADMIN = User(name='admin', email='admin@example.com', password='admin123')
